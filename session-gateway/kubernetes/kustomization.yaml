@@ -9,7 +9,6 @@ configMapGenerator:
 - name: templates
   files:
   - templates/session.yaml
-  - templates/restricted.json
 
 #configMapGenerator:
 #- name: sssd
