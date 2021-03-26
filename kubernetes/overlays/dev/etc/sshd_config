@@ -56,4 +56,4 @@ Subsystem	sftp	/usr/libexec/openssh/sftp-server
 AcceptEnv rm image
 
 # force everyone to spawn a container
-ForceCommand image=slaclab/login-centos:latest /session-spawner.sh
+ForceCommand /session-spawner.sh

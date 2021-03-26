@@ -4,7 +4,7 @@ set -xe
 
 export rm=${rm:-false}
 export template=${template:-session.yaml}
-export image=${image:-'ubuntu:latest'}
+export image=${image:-'slaclab/login-centos7:latest'}
 
 create_session() {
 
