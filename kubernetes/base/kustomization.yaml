@@ -1,0 +1,14 @@
+namespace: sshd-gateway
+
+bases:
+- ../../session-gateway/kubernetes
+
+#resources:
+
+# patchesStrategicMerge:
+# secretGenerator:
+#- name: mongodb
+#  literals:
+#  - username=admin
+#  - password=somepassword
+

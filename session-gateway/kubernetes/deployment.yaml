@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: session-gateway
+  labels:
+    app: session-gateway
+    network: unrestricted
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: session-gateway
+      network: unrestricted
+  template:
+    metadata:
+      labels:
+        app: session-gateway
+        network: unrestricted
+    spec:
+      serviceAccount: session-gateway
+      initContainers:
+      - name: sssd
+        image: busybox:latest
+        command: [ "/bin/sh", "-c" ]
+        args:
+        - cp -v /in/sssd.conf /out/sssd.conf && chmod 600 /out/sssd.conf 
+        volumeMounts:
+        - name: sssd
+          mountPath: /in
+        - name: sssd-conf
+          mountPath: /out
+      - name: hostkeys
+        image: busybox:latest
+        command: [ "/bin/sh", "-c" ]
+        args:
+        - cp -v /in/* /out/ && chmod go-rwx /out/*
+        volumeMounts:
+        - name: ssh-hostkeys
+          mountPath: /in
+        - name: ssh-hostkeys-conf
+          mountPath: /out
+      containers:
+      - name: gateway
+        image: slaclab/session-gateway
+        command: ["/entrypoint.sh"]
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 22
+        #securityContext:
+        #  capabilities:
+        #    drop:
+        #    - AUDIT_WRITE
+        #    - DAC_OVERRIDE
+        #    - FOWNER
+        #    - FSETID
+        #    - MKNOD
+        #    - SETFCAP
+        volumeMounts:
+        - name: templates
+          mountPath: /templates
+        - name: sssd-conf
+          mountPath: /etc/sssd/
+        - name: sssd
+          mountPath: /etc/nslcd.conf
+          subPath: nslcd.conf
+        - name: sssd
+          mountPath: /etc/krb5.conf
+          subPath: krb5.conf
+        - name: sshd
+          mountPath: /etc/ssh/sshd_config
+          subPath: sshd_config
+        - name: ssh-hostkeys-conf
+          mountPath: /etc/ssh/keys/
+        - name: nslcd
+          mountPath: /var/run/nslcd
+        #- name: sss-db
+        #  mountPath: /var/lib/sss/db/
+      volumes:
+      - name: templates
+        configMap:
+          name: templates
+      - name: sssd
+        configMap:
+          name: sssd
+      - name: sssd-conf
+        emptyDir: {}
+      - name: sshd
+        configMap:
+          name: sshd
+          items:
+          - key: sshd_config
+            path: sshd_config
+      - name: ssh-hostkeys
+        secret:
+          secretName: ssh-hostkeys
+      - name: ssh-hostkeys-conf
+        emptyDir: {}
+      - name: nslcd
+        emptyDir: {}
+      #- name: sss-db 
+      #  emptyDir: {}

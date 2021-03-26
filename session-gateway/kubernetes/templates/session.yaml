@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: __USER__
+  labels:
+    app: session-host
+    user: __USER__
+spec:
+  selector:
+    matchLabels:
+      app: session-host
+      user: __USER__
+  template:
+    metadata:
+      labels:
+        app: session-host
+        user: __USER__
+    spec:
+      containers:
+      - name: session
+        image: __IMAGE__
+        command: [ "__SHELL__" ]
+        stdin: True
+        tty: True
+        securityContext:
+          runAsUser: __UID__
+          capabilities:
+            drop:
+            - AUDIT_WRITE
+            - DAC_OVERRIDE
+            - MKNOD
+            - NET_BIND_SERVICE
+            - NET_RAW
+            - SETGID
+            - SETUID
+            - SYS_CHROOT
+      securityContext:
+        fsGroup: __GID__
+        supplementalGroups: [ __SUP_GID__ ]
+

@@ -1,0 +1,57 @@
+Port 22
+AddressFamily inet
+
+HostKey /etc/ssh/keys/ssh_host_rsa_key
+#HostKey /etc/ssh/keys/ssh_host_dsa_key
+HostKey /etc/ssh/keys/ssh_host_ecdsa_key
+HostKey /etc/ssh/keys/ssh_host_ed25519_key
+
+SyslogFacility AUTHPRIV
+#LoginGraceTime 2m
+PermitRootLogin no
+#StrictModes yes
+#MaxAuthTries 6
+#MaxSessions 10
+
+#PubkeyAuthentication yes
+AuthorizedKeysFile	.ssh/authorized_keys
+PasswordAuthentication yes
+ChallengeResponseAuthentication no
+GSSAPIAuthentication yes
+GSSAPICleanupCredentials no
+UsePAM yes
+
+#AllowAgentForwarding yes
+#AllowTcpForwarding yes
+#GatewayPorts no
+X11Forwarding yes
+#X11DisplayOffset 10
+#X11UseLocalhost yes
+#PermitTTY yes
+#PrintMotd yes
+#PrintLastLog yes
+TCPKeepAlive yes
+#UseLogin no
+UsePrivilegeSeparation sandbox
+#PermitUserEnvironment no
+#Compression delayed
+#ClientAliveInterval 0
+#ClientAliveCountMax 3
+#ShowPatchLevel no
+#PidFile /var/run/sshd.pid
+#MaxStartups 10:30:100
+#PermitTunnel no
+#ChrootDirectory none
+#VersionAddendum none
+
+Banner /etc/ssh/sshd-banner
+
+AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+AcceptEnv XMODIFIERS
+
+Subsystem	sftp	/usr/libexec/openssh/sftp-server
+
+# force everyone to spawn a container
+ForceCommand image=centos:latest /session-spawner.sh

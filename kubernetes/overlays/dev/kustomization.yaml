@@ -1,0 +1,27 @@
+namespace: sshd-gateway--dev
+
+bases:
+- ../../base/
+
+resources:
+- namespace.yaml
+
+configMapGenerator:
+- name: sssd
+  files:
+  - etc/sssd.conf
+  - etc/nslcd.conf
+  - etc/krb5.conf
+- name: sshd
+  files:
+  - etc/sshd_config
+
+secretGenerator:
+- name: ssh-hostkeys
+  files:
+  - etc/ssh_host_ecdsa_key
+  - etc/ssh_host_ecdsa_key.pub
+  - etc/ssh_host_ed25519_key
+  - etc/ssh_host_ed25519_key.pub
+  - etc/ssh_host_rsa_key
+  - etc/ssh_host_rsa_key.pub
