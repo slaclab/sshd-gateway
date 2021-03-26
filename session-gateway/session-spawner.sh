@@ -5,6 +5,7 @@ set -xe
 export rm=${rm:-false}
 export template=${template:-session.yaml}
 export image=${image:-'slaclab/login-centos7:latest'}
+export session=${session:-session-1}
 
 create_session() {
 
@@ -17,6 +18,7 @@ create_session() {
   sed -e "s/__UID__/$uid/g" -e "s/__USER__/$USER/g" \
     -e "s/__GID__/$gid/g" -e "s/__SUP_GID__/$sup_gid/g" \
     -e "s|__IMAGE__|$image|g" \
+    -e "s|__SESSION__|$session|g" \
     -e "s|__SHELL__|$shell|g" \
     "/templates/$template" \
   | kubectl create -f -
@@ -61,7 +63,7 @@ main() {
     sleep 1
   done
   pod_name=$(kubectl get pods -l app=session-host,user="$USER" --output=jsonpath='{.items..metadata.name}')
-  exec kubectl attach "$pod_name" -it -c "session"
+  exec kubectl attach "$pod_name" -it -c "$session"
 
 }
 

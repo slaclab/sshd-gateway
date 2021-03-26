@@ -17,7 +17,7 @@ spec:
         user: __USER__
     spec:
       containers:
-      - name: session
+      - name: __SESSION__
         image: __IMAGE__
         command: [ "__SHELL__" ]
         stdin: True
