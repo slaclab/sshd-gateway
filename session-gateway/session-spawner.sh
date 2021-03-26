@@ -16,7 +16,7 @@ create_session() {
   echo "[$(date)][INFO] Starting session instance with image $image, rm: $rm"
   sed -e "s/__UID__/$uid/g" -e "s/__USER__/$USER/g" \
     -e "s/__GID__/$gid/g" -e "s/__SUP_GID__/$sup_gid/g" \
-    -e "s/__IMAGE__/$image/g" \
+    -e "s|__IMAGE__|$image|g" \
     -e "s|__SHELL__|$shell|g" \
     "/templates/$template" \
   | kubectl create -f -
