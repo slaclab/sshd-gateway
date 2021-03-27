@@ -9,17 +9,19 @@ export session=${session:-session-1}
 
 create_session() {
 
-  uid=$(id -u $USER)
-  gid=$(id -g $USER)
+  getent=$(getent passwd $USER)
+  uid=$( echo "$getent" | cut -d : -f 3)
+  gid=$( echo "$getent" | cut -d : -f 4)
   sup_gid=$(id -G $USER | sed "s/ /, /g" )
-  shell=$(getent passwd $USER |  cut -d : -f 7)
-
+  shell=$(echo "$getent" |  cut -d : -f 7)
+  home=$(echo "$getent" | cut -d : -f 6)
+  sssd_cm=$(kubectl get cm --sort-by=.metadata.creationTimestamp -o name | grep sssd | sed 's|configmap/||g' | head -n 1)
   echo "[$(date)][INFO] Starting session instance with image $image, rm: $rm"
-  sed -e "s/__UID__/$uid/g" -e "s/__USER__/$USER/g" \
-    -e "s/__GID__/$gid/g" -e "s/__SUP_GID__/$sup_gid/g" \
-    -e "s|__IMAGE__|$image|g" \
-    -e "s|__SESSION__|$session|g" \
+  sed -e "s|__UID__|$uid|g" -e "s|__USER__|$USER|g" -e "s|__HOME__|$home|g" \
+    -e "s|__GID__|$gid|g" -e "s|__SUP_GID__|$sup_gid|g" \
+    -e "s|__IMAGE__|$image|g" -e "s|__SESSION__|$session|g" \
     -e "s|__SHELL__|$shell|g" \
+    -e "s|__SSSD__|$sssd_cm|g" \
     "/templates/$template" \
   | kubectl create -f -
 
@@ -63,7 +65,12 @@ main() {
     sleep 1
   done
   pod_name=$(kubectl get pods -l app=session-host,user="$USER" --output=jsonpath='{.items..metadata.name}')
-  exec kubectl attach "$pod_name" -it -c "$session"
+  kubectl attach "$pod_name" -it -c "$session"
+
+  exit=$?
+  echo "Exit code: " $exit
+
+  # TODO delete deployment if no connections...? how?
 
 }
 

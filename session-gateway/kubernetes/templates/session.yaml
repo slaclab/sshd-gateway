@@ -16,10 +16,23 @@ spec:
         app: session-host
         user: __USER__
     spec:
+      # use an init container to add relevant entries for passwd and group so that the user at least has their own info
+      initContainers:
+      - name: passwd
+        image: __IMAGE__
+        command:
+        - bash 
+        args:
+        - -c
+        - cp /etc/passwd /out/passwd && echo '__USER__:x:__UID__:__GID__:__USER__:__HOME__:__SHELL__' >> /out/passwd
+        volumeMounts:
+        - name: passwd-conf
+          mountPath: /out
       containers:
       - name: __SESSION__
         image: __IMAGE__
-        command: [ "__SHELL__" ]
+        command:
+        - "__SHELL__" 
         stdin: True
         tty: True
         securityContext:
@@ -34,7 +47,19 @@ spec:
             - SETGID
             - SETUID
             - SYS_CHROOT
+        volumeMounts:
+        - name: passwd-conf
+          mountPath: /etc/passwd
+          readOnly: True
+          subPath: passwd
+        - name: home
+          mountPath: "__HOME__"
       securityContext:
         fsGroup: __GID__
         supplementalGroups: [ __SUP_GID__ ]
-
+      volumes:
+      - name: passwd-conf
+        emptyDir: {}
+      # this shoudl probably be a pvc or hostpath
+      - name: home
+        emptyDir: {}
