@@ -114,7 +114,7 @@ main() {
   fi
 
   # delete pod if its not doing anything
-  if ! kubectl exec "$pod_name" -it -c tmux -- pidof tmux 2>&1 >/dev/null ; then
+  if ! kubectl exec "$pod_name" -c tmux -- pidof tmux 2>&1 >/dev/null ; then
     echo "No active sessions left, terminating container..."
     kubectl delete pod "$pod_name" --force --grace-period 0  2>&1 >/dev/null
   fi
