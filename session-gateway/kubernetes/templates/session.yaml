@@ -50,6 +50,9 @@ spec:
       mountPath: "__HOME__"
     - name: tmp
       mountPath: /tmp/
+    # make use of a statically built tmux that we bind mount in
+    - name: tmux
+      mountPath: /usr/local/bin/tmux
   securityContext:
     fsGroup: __GID__
     supplementalGroups: [ __SUP_GID__ ]
@@ -61,3 +64,8 @@ spec:
     emptyDir: {}
   - name: tmp
     emptyDir: {}
+  # TODO: shoudl put this in a real PVC
+  - name: tmux
+    hostPath:
+      path: /opt/tmux
+      type: File
