@@ -68,7 +68,7 @@ attach() {
   if [ "$pod_state" != "Running" ]; then
     while ! kubectl get pod -l "app=session-host,user=$USER" --no-headers=true 2>&1 \
       | grep -q Running; do
-      echo "Waiting for container to spawn..."
+      #echo "Waiting for container to spawn..."
       sleep 1
     done
   fi
