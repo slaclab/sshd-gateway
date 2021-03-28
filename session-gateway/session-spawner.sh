@@ -85,7 +85,7 @@ tmux() {
   # if a session is not defined, then always create a new tmux session
   if [ "$session" == "" ]; then
     echo "Creating new tmux session..."
-    kubectl exec "$pod_name" -it -c "tmux" -- tmux $control_mode new-session -A
+    kubectl exec "$pod_name" -it -c "tmux" -- tmux $control_mode new-session 
   else
     echo "Attaching to existing tmux session $session..."
     kubectl exec "$pod_name" -it -c "tmux" -- tmux $control_mode new-session -A -s $session
