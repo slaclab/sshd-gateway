@@ -23,7 +23,7 @@ spec:
         image: busybox:latest
         command: [ "/bin/sh", "-c" ]
         args:
-        - cp -v /in/sssd.conf /out/sssd.conf && chmod 600 /out/sssd.conf 
+        - cp -v /in/sssd.conf /out/sssd.conf && chmod 600 /out/sssd.conf && mkdir -p /out/conf.d && chown 755 /out/conf.d 
         volumeMounts:
         - name: sssd
           mountPath: /in

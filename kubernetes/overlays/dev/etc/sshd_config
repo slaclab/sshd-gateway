@@ -57,3 +57,5 @@ AcceptEnv rm image session
 
 # force everyone to spawn a container
 ForceCommand /session-spawner.sh
+
+ 
