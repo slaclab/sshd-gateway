@@ -30,7 +30,7 @@ create_pod() {
 attach() {
 
   # search for existing pod for user
-  local pods=$(kubectl get pods -l app=session-host,user="$USER" --no-headers 2>&1)
+  local pods=$(kubectl get pods -l app=session-host,user="$USER" --no-headers 2>/dev/null)
   pod_name=$(echo "$pods" | awk '{print $1}')
   pod_state=$(echo "$pods" | awk '{print $3}')
 
