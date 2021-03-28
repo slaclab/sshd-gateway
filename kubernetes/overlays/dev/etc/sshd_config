@@ -53,7 +53,7 @@ AcceptEnv XMODIFIERS
 
 Subsystem	sftp	/usr/libexec/openssh/sftp-server
 
-AcceptEnv rm image session
+AcceptEnv rm image session control_mode
 
 # force everyone to spawn a container
 ForceCommand /session-spawner.sh

@@ -6,6 +6,7 @@ export rm=${rm:-false}
 export template=${template:-session.yaml}
 export image=${image:-'slaclab/login-centos7:latest'}
 export session=${session:-""}
+export control_mode=${control_mode:-""}
 
 create_pod() {
 
@@ -77,13 +78,17 @@ attach() {
 
 tmux() {
 
+  if [ "$control_mode" != "" ]; then
+    control_mode="-CC"
+  fi
+
   # if a session is not defined, then always create a new tmux session
   if [ "$session" == "" ]; then
     echo "Creating new tmux session..."
-    kubectl exec "$pod_name" -it -c "tmux" -- tmux new-session -A
+    kubectl exec "$pod_name" -it -c "tmux" -- tmux $control_mode new-session -A
   else
     echo "Attaching to existing tmux session $session..."
-    kubectl exec "$pod_name" -it -c "tmux" -- tmux new-session -A -s $session
+    kubectl exec "$pod_name" -it -c "tmux" -- tmux $control_mode new-session -A -s $session
   fi
 
 }
