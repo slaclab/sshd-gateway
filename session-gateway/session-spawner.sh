@@ -79,7 +79,7 @@ attach() {
 tmux() {
 
   if [ "$control_mode" != "" ]; then
-    control_mode="-CC"
+    control_mode="-CC -u"
   fi
 
   # if a session is not defined, then always create a new tmux session
