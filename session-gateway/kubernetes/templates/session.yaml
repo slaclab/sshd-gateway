@@ -61,8 +61,6 @@ spec:
       mountPath: /etc/passwd
       readOnly: True
       subPath: passwd
-    - name: home
-      mountPath: "__HOME__"
     - name: tmp
       mountPath: /tmp/
     # make use of a statically built tmux that we bind mount in
@@ -87,8 +85,6 @@ spec:
   - name: passwd-conf
     emptyDir: {}
   # this shoudl probably be a pvc or hostpath
-  - name: home
-    emptyDir: {}
   - name: tmp
     emptyDir:
       sizeLimit: "1Gi"
