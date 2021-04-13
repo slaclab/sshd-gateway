@@ -6,6 +6,9 @@ bases:
 resources:
 - namespace.yaml
 
+patchesStrategicMerge:
+- service-patch.yaml
+
 configMapGenerator:
 - name: sssd
   files:
