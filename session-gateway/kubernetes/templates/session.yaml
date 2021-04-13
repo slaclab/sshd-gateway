@@ -6,6 +6,20 @@ metadata:
     app: session-host
     user: __USER__
 spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: storage/sdf
+            operator: In
+            values:
+            - "true"
+        - matchExpressions:
+          - key: slurm
+            operator: In
+            values:
+            - "true"
   restartPolicy: OnFailure
   # use an init container to add relevant entries for passwd and group so that the user at least has their own info
   initContainers:
@@ -15,13 +29,14 @@ spec:
     - bash 
     args:
     - -c
-    - cp /etc/passwd /out/passwd && echo '__USER__:x:__UID__:__GID__:__USER__:__HOME__:__SHELL__' >> /out/passwd
+    - cp /etc/passwd /out/passwd && echo '__USER__:x:__UID__:__GID__:__USER__:__HOME__:__SHELL__' >> /out/passwd && echo 'munge:x:16952:1034:munge:/var/lib/munge:/sbin/nologin' >> /out/passwd && echo 'slurm:x:16924:1034:slurm:/var/lib/slurm:/sbin/nologin' >> /out/passwd
     volumeMounts:
     - name: passwd-conf
       mountPath: /out
   containers:
   - name: tmux
     image: __IMAGE__
+    imagePullPolicy: Always
     command:
     - /bin/bash
     args:
@@ -51,8 +66,20 @@ spec:
     - name: tmp
       mountPath: /tmp/
     # make use of a statically built tmux that we bind mount in
-    - name: tmux
-      mountPath: /usr/local/bin/tmux
+    - name: slac-apps
+      mountPath: /usr/local/bin/
+    - name: sdf
+      mountPath: /sdf
+    # slurm stuff
+    - mountPath: /var/run/munge/
+      name: munge-socket
+    - mountPath: /usr/lib64/libmunge.so.2
+      name: munge-libs
+    - mountPath: /opt/slurm/
+      name: slurm
+    - mountPath: /run/slurm/conf/
+      name: slurm-config
+      readOnly: true
   securityContext:
     fsGroup: __GID__
     supplementalGroups: [ __SUP_GID__ ]
@@ -63,9 +90,26 @@ spec:
   - name: home
     emptyDir: {}
   - name: tmp
-    emptyDir: {}
-  # TODO: shoudl put this in a real PVC
-  - name: tmux
+    emptyDir:
+      sizeLimit: "1Gi"
+  - name: sdf
     hostPath:
-      path: /opt/tmux
-      type: File
+      path: /sdf
+  # TODO: shoudl put this in a real PVC
+  - name: slac-apps
+    hostPath:
+      path: /opt/slac-apps
+  # slurm stuff
+  - name: munge-libs
+    hostPath:
+      path: /usr/lib64/libmunge.so.2.0.0
+  - name: munge-socket
+    hostPath:
+      path: /var/run/munge
+  - name: slurm
+    hostPath:
+      path: /opt/slurm
+  - name: slurm-config
+    hostPath:
+      path: /var/spool/slurmd/conf-cache
+
