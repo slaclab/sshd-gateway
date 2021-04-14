@@ -6,6 +6,7 @@ RUN set -ex \
     && yum -y install \
       openssh-clients \
       rsync \
+      environment-modules \
     && yum clean all \
     && rm -rf /var/cache/yum
 
