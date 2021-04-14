@@ -44,6 +44,13 @@ spec:
     - sleep infinity
     stdin: True
     tty: True
+    resources:
+      limits:
+        cpu: "0.5"
+        memory: "1000Mi"
+      requests:
+        cpu: "0.1"
+        memory: "200Mi"
     securityContext:
       runAsUser: __UID__
       capabilities:
@@ -66,18 +73,46 @@ spec:
     # make use of a statically built tmux that we bind mount in
     - name: slac-apps
       mountPath: /usr/local/bin/
+      readOnly: true
     - name: sdf
       mountPath: /sdf
     # slurm stuff
     - mountPath: /var/run/munge/
       name: munge-socket
+      readOnly: true
     - mountPath: /usr/lib64/libmunge.so.2
       name: munge-libs
+      readOnly: true
     - mountPath: /opt/slurm/
       name: slurm
+      readOnly: true
     - mountPath: /run/slurm/conf/
       name: slurm-config
       readOnly: true
+    # modulefiles
+#    - mountPath: /usr/share/Modules/
+#      name: modulefile
+#      readOnly: true
+#    - mountPath: /usr/bin/modulecmd
+#      name: modulecmd
+#      readOnly: true
+#      subPath: modulecmd
+#    - mountPath: /lib64/libtcl8.5.so
+#      name: module-libs
+#      readOnly: true
+#      subPath: libtcl8.5.so
+#    - mountPath: /lib64/libX11.so.6
+#      name: module-libs
+#      readOnly: true
+#      subPath: libX11.so.6.3.0
+#    - mountPath: /lib64/libxcb.so.1
+#      name: module-libs
+#      readOnly: true
+#      subPath: libxcb.so.1.1.0
+#    - mountPath: /lib64/libXau.so.6
+#      name: module-libs
+#      readOnly: true
+#      subPath: libXau.so.6.0.0
   securityContext:
     fsGroup: __GID__
     supplementalGroups: [ __SUP_GID__ ]
@@ -87,7 +122,7 @@ spec:
   # this shoudl probably be a pvc or hostpath
   - name: tmp
     emptyDir:
-      sizeLimit: "1Gi"
+      sizeLimit: "1Gi" # need real pv for this to work
   - name: sdf
     hostPath:
       path: /sdf
@@ -108,4 +143,13 @@ spec:
   - name: slurm-config
     hostPath:
       path: /var/spool/slurmd/conf-cache
+#  - name: modulefile
+#    hostPath:
+#      path: /usr/share/Modules
+#  - name: modulecmd
+#    hostPath:
+#      path: /usr/bin
+#  - name: module-libs
+#    hostPath:
+#      path: /lib64/
 
