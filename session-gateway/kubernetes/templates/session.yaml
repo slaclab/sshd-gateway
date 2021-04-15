@@ -89,7 +89,11 @@ spec:
     - mountPath: /run/slurm/conf/
       name: slurm-config
       readOnly: true
-    # modulefiles
+   # modulefiles
+    - mountPath: /usr/share/Modules/init/.modulespath
+      name: userpod
+      readOnly: true
+      subPath: .modulespath
 #    - mountPath: /usr/share/Modules/
 #      name: modulefile
 #      readOnly: true
@@ -143,6 +147,9 @@ spec:
   - name: slurm-config
     hostPath:
       path: /var/spool/slurmd/conf-cache
+  - name: userpod
+    configMap:
+     name: userpod
 #  - name: modulefile
 #    hostPath:
 #      path: /usr/share/Modules
