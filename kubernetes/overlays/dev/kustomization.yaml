@@ -1,4 +1,4 @@
-namespace: sshd-gateway--dev
+namespace: dev
 
 bases:
 - ../../base/
@@ -6,6 +6,7 @@ bases:
 resources:
 - namespace.yaml
 - cm-userpod.yaml
+- config.yaml
 
 patchesStrategicMerge:
 - service-patch.yaml
@@ -14,7 +15,7 @@ configMapGenerator:
 - name: sssd
   files:
   - etc/sssd.conf
-  - etc/nslcd.conf
+  #- etc/nslcd.conf
   - etc/krb5.conf
 - name: sshd
   files:
@@ -29,3 +30,7 @@ secretGenerator:
   - etc/ssh_host_ed25519_key.pub
   - etc/ssh_host_rsa_key
   - etc/ssh_host_rsa_key.pub
+
+images:
+- name: slaclab/session-gateway 
+  newTag: 20230912-0830

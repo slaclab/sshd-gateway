@@ -1,25 +1,26 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: __USER__
+  name: __USER__-__TEMPLATE__
   labels:
     app: session-host
     user: __USER__
+    template: __TEMPLATE__
 spec:
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: storage/sdf
-            operator: In
-            values:
-            - "true"
-        - matchExpressions:
-          - key: slurm
-            operator: In
-            values:
-            - "true"
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: storage/sdf
+#            operator: In
+#            values:
+#            - "true"
+#        - matchExpressions:
+#          - key: slurm
+#            operator: In
+#            values:
+#            - "true"
   restartPolicy: OnFailure
   # use an init container to add relevant entries for passwd and group so that the user at least has their own info
   initContainers:
@@ -32,6 +33,16 @@ spec:
     - cp /etc/passwd /out/passwd && echo '__USER__:x:__UID__:__GID__:__USER__:__HOME__:__SHELL__' >> /out/passwd && echo 'munge:x:16952:1034:munge:/var/lib/munge:/sbin/nologin' >> /out/passwd && echo 'slurm:x:16924:1034:slurm:/var/lib/slurm:/sbin/nologin' >> /out/passwd
     volumeMounts:
     - name: passwd-conf
+      mountPath: /out
+  - name: sudo
+    image: __IMAGE__
+    command:
+    - bash
+    args:
+    - -c
+    - "echo '__USER__ ALL=(ALL) NOPASSWD: ALL' > /out/sudoer && chmod 0440 /out/sudoer"
+    volumeMounts:
+    - name: sudo-conf
       mountPath: /out
   containers:
   - name: tmux
@@ -52,7 +63,8 @@ spec:
         cpu: "0.1"
         memory: "200Mi"
     securityContext:
-      runAsUser: __UID__
+      readOnlyRootFilesystem: true
+      #runAsUser: __UID__
       capabilities:
         drop:
         - AUDIT_WRITE
@@ -68,6 +80,10 @@ spec:
       mountPath: /etc/passwd
       readOnly: True
       subPath: passwd
+    - name: sudo-conf
+      mountPath: /etc/sudoers.d/__USER__
+      readOnly: True
+      subPath: sudoer
     - name: tmp
       mountPath: /tmp/
     # make use of a statically built tmux that we bind mount in
@@ -75,7 +91,11 @@ spec:
       mountPath: /usr/local/bin/
       readOnly: true
     - name: sdf
-      mountPath: /sdf
+      mountPath: __HOME__
+      subPath: home/__FIRST_USER__/__USER__
+    - name: sdf
+      mountPath: /sdf/group/ldmx
+      subPath: group/ldmx
     # slurm stuff
     - mountPath: /var/run/munge/
       name: munge-socket
@@ -117,11 +137,10 @@ spec:
 #      name: module-libs
 #      readOnly: true
 #      subPath: libXau.so.6.0.0
-  securityContext:
-    fsGroup: __GID__
-    supplementalGroups: [ __SUP_GID__ ]
   volumes:
   - name: passwd-conf
+    emptyDir: {}
+  - name: sudo-conf
     emptyDir: {}
   # this shoudl probably be a pvc or hostpath
   - name: tmp
@@ -130,10 +149,9 @@ spec:
   - name: sdf
     hostPath:
       path: /sdf
-  # TODO: shoudl put this in a real PVC
   - name: slac-apps
-    hostPath:
-      path: /opt/slac-apps
+    persistentVolumeClaim:
+      claimName: slac-apps
   # slurm stuff
   - name: munge-libs
     hostPath:
@@ -149,7 +167,7 @@ spec:
       path: /var/spool/slurmd/conf-cache
   - name: userpod
     configMap:
-     name: userpod
+      name: userpod
 #  - name: modulefile
 #    hostPath:
 #      path: /usr/share/Modules
@@ -159,4 +177,9 @@ spec:
 #  - name: module-libs
 #    hostPath:
 #      path: /lib64/
+  dnsConfig:
+    searches:
+    - sdf.slac.stanford.edu
+    - slac.stanford.edu
+
 

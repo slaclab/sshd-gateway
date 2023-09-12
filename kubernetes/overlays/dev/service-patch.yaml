@@ -5,7 +5,7 @@ metadata:
     app: session-gateway
   name: session-gateway
   annotations:
-    metallb.universe.tf/address-pool: farm04-openstack 
+    metallb.universe.tf/address-pool: sdf-services
 spec:
   ports:
   - port: 22

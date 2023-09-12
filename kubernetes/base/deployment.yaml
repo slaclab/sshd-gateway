@@ -55,14 +55,21 @@ spec:
         #    - FSETID
         #    - MKNOD
         #    - SETFCAP
+#        env:
+#        - name: DEFAULT_IMAGE
+#          value: slaclab/login-centos8:latest
+#        - name: DEFAULT_TEMPLATE
+#          value: session.yaml
         volumeMounts:
         - name: templates
           mountPath: /templates
+        - name: config
+          mountPath: /config
         - name: sssd-conf
           mountPath: /etc/sssd/
-        - name: sssd
-          mountPath: /etc/nslcd.conf
-          subPath: nslcd.conf
+#        - name: sssd
+#          mountPath: /etc/nslcd.conf
+#          subPath: nslcd.conf
         - name: sssd
           mountPath: /etc/krb5.conf
           subPath: krb5.conf
@@ -79,6 +86,9 @@ spec:
       - name: templates
         configMap:
           name: templates
+      - name: config
+        configMap:
+          name: config
       - name: sssd
         configMap:
           name: sssd

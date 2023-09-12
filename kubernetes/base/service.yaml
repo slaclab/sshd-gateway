@@ -4,6 +4,8 @@ metadata:
   labels:
     app: session-gateway
   name: session-gateway
+  annotations:
+    metallb.universe.tf/address-pool: sdf-services
 spec:
   ports:
   - nodePort: 32222
@@ -12,4 +14,4 @@ spec:
     targetPort: 22
   selector:
     app: session-gateway
-  type: NodePort
+  type: LoadBalancer

@@ -1,7 +1,7 @@
 RUNTIME ?= sudo docker
 TAG ?= latest
 REPO ?= slaclab
-IMAGE ?= session-gateway
+IMAGE ?= login-rocky8
 
 .PHONEY:
 

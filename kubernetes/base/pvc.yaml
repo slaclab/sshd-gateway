@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: slac-apps
+spec:
+  storageClassName: wekafs--sdf-k8s01
+  resources:
+    requests:
+      storage: 10Gi
+  accessModes:
+    - ReadOnlyMany

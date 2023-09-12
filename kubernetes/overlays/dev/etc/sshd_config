@@ -32,7 +32,7 @@ X11Forwarding yes
 #PrintLastLog yes
 TCPKeepAlive yes
 #UseLogin no
-UsePrivilegeSeparation sandbox
+#UsePrivilegeSeparation sandbox
 #PermitUserEnvironment no
 #Compression delayed
 #ClientAliveInterval 0
@@ -53,7 +53,7 @@ AcceptEnv XMODIFIERS
 
 Subsystem	sftp	/usr/libexec/openssh/sftp-server
 
-AcceptEnv rm image session control_mode
+AcceptEnv rm image template session control_mode
 
 # force everyone to spawn a container
 ForceCommand /session-spawner.sh
