@@ -6,12 +6,11 @@ resources:
 - serviceaccount.yaml
 - pvc.yaml
 
-configMapGenerator:
-- name: templates
-  files:
-  - templates/default.yaml
-  - templates/ldmx.yaml
-
+#configMapGenerator:
+#- name: templates
+#  files:
+#  - templates/default.yaml
+#  - templates/ldmx.yaml
 
 #configMapGenerator:
 #- name: sssd

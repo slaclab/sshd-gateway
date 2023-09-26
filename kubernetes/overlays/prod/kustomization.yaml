@@ -1,4 +1,4 @@
-namespace: dev
+namespace: prod
 
 bases:
 - ../../base/
@@ -17,10 +17,11 @@ configMapGenerator:
   - etc/templates/default.yaml
   - etc/templates/ldmx.yaml
   - etc/templates/supercdms.yaml
+  options:
+    disableNameSuffixHash: true
 - name: sssd
   files:
   - etc/sssd.conf
-  #- etc/nslcd.conf
   - etc/krb5.conf
 - name: sshd
   files:

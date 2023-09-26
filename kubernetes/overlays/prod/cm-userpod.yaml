@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: userpod
+data:
+  .modulespath: |
+    /usr/share/Modules/modulefiles
+    /etc/modulefiles
+    /sdf/sw/modulefiles
+    /sdf/group/cryoem/sw/modulefiles/
+

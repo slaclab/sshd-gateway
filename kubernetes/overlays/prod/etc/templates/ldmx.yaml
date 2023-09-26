@@ -1,0 +1,130 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: __USER__-__TEMPLATE__
+  labels:
+    app: session-host
+    user: __USER__
+    template: __TEMPLATE__
+spec:
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: storage/sdf
+#            operator: In
+#            values:
+#            - "true"
+#        - matchExpressions:
+#          - key: slurm
+#            operator: In
+#            values:
+#            - "true"
+  restartPolicy: OnFailure
+  # use an init container to add relevant entries for passwd and group so that the user at least has their own info
+  initContainers:
+  - name: passwd
+    image: __IMAGE__
+    command:
+    - bash 
+    args:
+    - -c
+    - cp /etc/passwd /out/passwd && echo '__USER__:x:__UID__:__GID__:__USER__:__HOME__:__SHELL__' >> /out/passwd && echo 'munge:x:16952:1034:munge:/var/lib/munge:/sbin/nologin' >> /out/passwd && echo 'slurm:x:16924:1034:slurm:/var/lib/slurm:/sbin/nologin' >> /out/passwd
+    volumeMounts:
+    - name: passwd-conf
+      mountPath: /out
+  #- name: sudo
+  #  image: __IMAGE__
+  #  command:
+  #  - bash
+  #  args:
+  #  - -c
+  #  - "echo '__USER__ ALL=(ALL) NOPASSWD: ALL' > /out/sudoer && chmod 0440 /out/sudoer"
+  #  volumeMounts:
+  #  - name: sudo-conf
+  #    mountPath: /out
+  containers:
+  - name: tmux
+    image: __IMAGE__
+    imagePullPolicy: Always
+    command:
+    - /bin/bash
+    args:
+    - -c
+    - sleep infinity
+    stdin: True
+    tty: True
+    resources:
+      limits:
+        cpu: "8"
+        memory: "12Gi"
+      requests:
+        cpu: "0.1"
+        memory: "200Mi"
+    securityContext:
+      readOnlyRootFilesystem: true
+      #runAsUser: __UID__
+      capabilities:
+        drop:
+        - AUDIT_WRITE
+        - DAC_OVERRIDE
+        - MKNOD
+        - NET_BIND_SERVICE
+        - NET_RAW
+        - SETGID
+        - SETUID
+        - SYS_CHROOT
+    volumeMounts:
+    - name: passwd-conf
+      mountPath: /etc/passwd
+      readOnly: True
+      subPath: passwd
+    #- name: sudo-conf
+    #  mountPath: /etc/sudoers.d/__USER__
+    #  readOnly: True
+    #  subPath: sudoer
+    - name: tmp
+      mountPath: /tmp/
+    # make use of a statically built tmux that we bind mount in
+    - name: slac-apps
+      mountPath: /usr/local/bin/
+      readOnly: true
+    - name: sdf
+      mountPath: __HOME__
+      subPath: home/__FIRST_USER__/__USER__
+    - name: sdf
+      mountPath: /sdf/group/ldmx
+      subPath: group/ldmx
+    - name: gpfs
+      mountPath: /gpfs/slac/staas/fs1/g/ldmx 
+      subPath: fs1/g/ldmx
+      
+  volumes:
+  - name: passwd-conf
+    emptyDir: {}
+  #- name: sudo-conf
+  #  emptyDir: {}
+  # this shoudl probably be a pvc or hostpath
+  - name: tmp
+    emptyDir:
+      sizeLimit: "1Gi" # need real pv for this to work
+  - name: slac-apps
+    persistentVolumeClaim:
+      claimName: slac-apps
+  # filemounts
+  - name: sdf
+    hostPath:
+      path: /sdf
+  - name: gpfs
+    nfs:
+      server: staas-cnfslb.slac.stanford.edu
+      path: /gpfs/slac/staas/
+      #fs1/g/ldmx 
+      readOnly: true
+  dnsConfig:
+    searches:
+    - sdf.slac.stanford.edu
+    - slac.stanford.edu
+
+

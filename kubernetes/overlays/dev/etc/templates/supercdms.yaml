@@ -34,16 +34,16 @@ spec:
     volumeMounts:
     - name: passwd-conf
       mountPath: /out
-  - name: sudo
-    image: __IMAGE__
-    command:
-    - bash
-    args:
-    - -c
-    - "echo '__USER__ ALL=(ALL) NOPASSWD: ALL' > /out/sudoer && chmod 0440 /out/sudoer"
-    volumeMounts:
-    - name: sudo-conf
-      mountPath: /out
+  #- name: sudo
+  #  image: __IMAGE__
+  #  command:
+  #  - bash
+  #  args:
+  #  - -c
+  #  - "echo '__USER__ ALL=(ALL) NOPASSWD: ALL' > /out/sudoer && chmod 0440 /out/sudoer"
+  #  volumeMounts:
+  #  - name: sudo-conf
+  #    mountPath: /out
   containers:
   - name: tmux
     image: __IMAGE__
@@ -57,8 +57,8 @@ spec:
     tty: True
     resources:
       limits:
-        cpu: "0.5"
-        memory: "1000Mi"
+        cpu: "8"
+        memory: "12Gi"
       requests:
         cpu: "0.1"
         memory: "200Mi"
@@ -80,10 +80,10 @@ spec:
       mountPath: /etc/passwd
       readOnly: True
       subPath: passwd
-    - name: sudo-conf
-      mountPath: /etc/sudoers.d/__USER__
-      readOnly: True
-      subPath: sudoer
+    #- name: sudo-conf
+    #  mountPath: /etc/sudoers.d/__USER__
+    #  readOnly: True
+    #  subPath: sudoer
     - name: tmp
       mountPath: /tmp/
     # make use of a statically built tmux that we bind mount in
@@ -94,89 +94,37 @@ spec:
       mountPath: __HOME__
       subPath: home/__FIRST_USER__/__USER__
     - name: sdf
-      mountPath: /sdf/group/ldmx
-      subPath: group/ldmx
-    # slurm stuff
-    - mountPath: /var/run/munge/
-      name: munge-socket
-      readOnly: true
-    - mountPath: /usr/lib64/libmunge.so.2
-      name: munge-libs
-      readOnly: true
-    - mountPath: /opt/slurm/
-      name: slurm
-      readOnly: true
-    - mountPath: /run/slurm/conf/
-      name: slurm-config
-      readOnly: true
-   # modulefiles
-    - mountPath: /usr/share/Modules/init/.modulespath
-      name: userpod
-      readOnly: true
-      subPath: .modulespath
-#    - mountPath: /usr/share/Modules/
-#      name: modulefile
-#      readOnly: true
-#    - mountPath: /usr/bin/modulecmd
-#      name: modulecmd
-#      readOnly: true
-#      subPath: modulecmd
-#    - mountPath: /lib64/libtcl8.5.so
-#      name: module-libs
-#      readOnly: true
-#      subPath: libtcl8.5.so
-#    - mountPath: /lib64/libX11.so.6
-#      name: module-libs
-#      readOnly: true
-#      subPath: libX11.so.6.3.0
-#    - mountPath: /lib64/libxcb.so.1
-#      name: module-libs
-#      readOnly: true
-#      subPath: libxcb.so.1.1.0
-#    - mountPath: /lib64/libXau.so.6
-#      name: module-libs
-#      readOnly: true
-#      subPath: libXau.so.6.0.0
+      mountPath: /sdf/group/supercdms
+      subPath: group/supercdms
+    - name: sdf
+      mountPath: /sdf/data/supercdms
+      subPath: data/supercdms
+    - name: gpfs
+      mountPath: /gpfs/slac/staas/fs1/g/supercdms
+      subPath: fs1/g/supercdms
+      
   volumes:
   - name: passwd-conf
     emptyDir: {}
-  - name: sudo-conf
-    emptyDir: {}
+  #- name: sudo-conf
+  #  emptyDir: {}
   # this shoudl probably be a pvc or hostpath
   - name: tmp
     emptyDir:
       sizeLimit: "1Gi" # need real pv for this to work
-  - name: sdf
-    hostPath:
-      path: /sdf
   - name: slac-apps
     persistentVolumeClaim:
       claimName: slac-apps
-  # slurm stuff
-  - name: munge-libs
+  # filemounts
+  - name: sdf
     hostPath:
-      path: /usr/lib64/libmunge.so.2.0.0
-  - name: munge-socket
-    hostPath:
-      path: /var/run/munge
-  - name: slurm
-    hostPath:
-      path: /opt/slurm
-  - name: slurm-config
-    hostPath:
-      path: /var/spool/slurmd/conf-cache
-  - name: userpod
-    configMap:
-      name: userpod
-#  - name: modulefile
-#    hostPath:
-#      path: /usr/share/Modules
-#  - name: modulecmd
-#    hostPath:
-#      path: /usr/bin
-#  - name: module-libs
-#    hostPath:
-#      path: /lib64/
+      path: /sdf
+  - name: gpfs
+    nfs:
+      server: staas-cnfslb.slac.stanford.edu
+      path: /gpfs/slac/staas/
+      #fs1/g/ldmx 
+      readOnly: true
   dnsConfig:
     searches:
     - sdf.slac.stanford.edu

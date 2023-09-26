@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config
+data:
+  # before launching the pod, the session gateway will literally grep this file with teh $USER and $template variables.
+  # if grep returns non-zero then it will throw an error that the users is not permitted to run this template
+  # exceptions are that default will always be allowed
+  allowlist.txt: |
+    ytl ldmx
+    ytl supercdms
+    omoreno ldmx
+    omoreno supercdms
+
