@@ -8,7 +8,12 @@ run-dump:
 
 dump: run-dump
 
+run-diff:
+	kubectl diff -k .
+
 run-apply:
 	kubectl apply -k .
 
 apply: ensure-context run-apply
+
+diff: ensure-context run-diff
