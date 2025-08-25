@@ -1,42 +1,43 @@
 namespace: prod
 
-bases:
-- ../../base/
 
 resources:
 - namespace.yaml
 - cm-userpod.yaml
 - config.yaml
+- ../../base/
 
-patchesStrategicMerge:
-- service-patch.yaml
 
 configMapGenerator:
-- name: templates
-  files:
+- files:
   - etc/templates/default.yaml
   - etc/templates/ldmx.yaml
   - etc/templates/supercdms.yaml
+  name: templates
   options:
     disableNameSuffixHash: true
-- name: sssd
-  files:
+- files:
   - etc/sssd.conf
   - etc/krb5.conf
-- name: sshd
-  files:
+  name: sssd
+- files:
   - etc/sshd_config
+  name: sshd
 
 secretGenerator:
-- name: ssh-hostkeys
-  files:
+- files:
   - etc/ssh_host_ecdsa_key
   - etc/ssh_host_ecdsa_key.pub
   - etc/ssh_host_ed25519_key
   - etc/ssh_host_ed25519_key.pub
   - etc/ssh_host_rsa_key
   - etc/ssh_host_rsa_key.pub
+  name: ssh-hostkeys
 
 images:
-- name: slaclab/session-gateway 
+- name: slaclab/session-gateway
   newTag: 20230912-0830
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+patches:
+- path: service-patch.yaml
