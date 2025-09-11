@@ -128,33 +128,28 @@ spec:
   - name: tmp
     emptyDir:
       sizeLimit: "1Gi" # need real pv for this to work
-
-# Removing all hostPath mounts in favor of SCs
-# (hostPath mounts are now forbidden by policy)
-#  - name: sdf
-#    hostPath:
-#      path: /sdf
-#  - name: slac-apps
-#    persistentVolumeClaim:
-#      claimName: slac-apps
-#  # slurm stuff
-#  - name: munge-libs
-#    hostPath:
-#      path: /usr/lib64/libmunge.so.2.0.0
-#  - name: munge-socket
-#    hostPath:
-#      path: /var/run/munge
-#  - name: slurm
-#    hostPath:
-#      path: /opt/slurm
-#  - name: slurm-config
-#    hostPath:
-#      path: /var/spool/slurmd/conf-cache
-#  - name: userpod
-#    configMap:
-#      name: userpod
-
-
+  - name: sdf
+    hostPath:
+      path: /sdf
+  - name: slac-apps
+    persistentVolumeClaim:
+      claimName: slac-apps
+  # slurm stuff
+  - name: munge-libs
+    hostPath:
+      path: /usr/lib64/libmunge.so.2.0.0
+  - name: munge-socket
+    hostPath:
+      path: /var/run/munge
+  - name: slurm
+    hostPath:
+      path: /opt/slurm
+  - name: slurm-config
+    hostPath:
+      path: /var/spool/slurmd/conf-cache
+  - name: userpod
+    configMap:
+      name: userpod
 #  - name: modulefile
 #    hostPath:
 #      path: /usr/share/Modules

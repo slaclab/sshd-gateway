@@ -101,8 +101,7 @@ spec:
       subPath: data/supercdms
     - name: gpfs
       mountPath: /gpfs/slac/staas/fs1/g/supercdms
-      subPath: fs1/g/supercdms
-      
+      subPath: g/supercdms
   volumes:
   - name: passwd-conf
     emptyDir: {}
@@ -122,8 +121,7 @@ spec:
   - name: gpfs
     nfs:
       server: staas-cnfslb.slac.stanford.edu
-      path: /gpfs/slac/staas/
-      #fs1/g/ldmx 
+      path: /gpfs/slac/staas/fs1
       readOnly: true
   dnsConfig:
     searches:
