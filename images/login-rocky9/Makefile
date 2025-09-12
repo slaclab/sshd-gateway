@@ -1,6 +1,6 @@
 RUNTIME ?= sudo podman
 TAG ?= latest
-REPO ?= docker://docker.io/slaclab
+REPO ?= slaclab
 IMAGE ?= login-rocky9
 
 .PHONEY:

@@ -1,4 +1,4 @@
-FROM rockylinux:9
+FROM rockylinux:9.3
 
 RUN set -ex \
     && yum -y update \
