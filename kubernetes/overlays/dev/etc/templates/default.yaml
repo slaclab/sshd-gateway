@@ -150,9 +150,9 @@ spec:
 #  - name: slurm-config
 #    hostPath:
 #      path: /var/spool/slurmd/conf-cache
-#  - name: userpod
-#    configMap:
-#      name: userpod
+  - name: userpod
+    configMap:
+      name: userpod
 
 
 #  - name: modulefile
