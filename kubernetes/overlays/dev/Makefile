@@ -17,3 +17,6 @@ run-apply:
 apply: ensure-context run-apply
 
 diff: ensure-context run-diff
+
+login-test:
+	image=slaclab/login-rocky9 ssh -o sendEnv=image 172.24.5.189
