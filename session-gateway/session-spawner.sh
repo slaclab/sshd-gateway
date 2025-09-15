@@ -4,7 +4,7 @@
 
 export rm=${rm:-false}
 export template=${template:-"default"}
-export image=${image:-"slaclab/login-rocky8:latest"}
+export image=${image:-${DEFAULT_IMAGE:-"slaclab/login-rocky9:latest"}}
 export session=${session:-""}
 export control_mode=${control_mode:-""}
 

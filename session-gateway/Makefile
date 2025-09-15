@@ -1,4 +1,4 @@
-RUNTIME ?= sudo docker
+RUNTIME ?= sudo podman
 TAG ?= latest
 REPO ?= slaclab
 IMAGE ?= session-gateway
