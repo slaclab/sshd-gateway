@@ -56,10 +56,10 @@ spec:
         #    - MKNOD
         #    - SETFCAP
 #        env:
-#        - name: DEFAULT_IMAGE
-#          value: slaclab/login-centos8:latest
-#        - name: DEFAULT_TEMPLATE
-#          value: session.yaml
+        - name: DEFAULT_IMAGE
+          value: slaclab/login-rocky9:latest
+        - name: DEFAULT_TEMPLATE
+          value: default.yaml
         volumeMounts:
         - name: templates
           mountPath: /templates
