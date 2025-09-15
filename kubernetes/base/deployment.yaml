@@ -55,7 +55,7 @@ spec:
         #    - FSETID
         #    - MKNOD
         #    - SETFCAP
-#        env:
+        env:
         - name: DEFAULT_IMAGE
           value: slaclab/login-rocky9:latest
         - name: DEFAULT_TEMPLATE
