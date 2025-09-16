@@ -71,30 +71,30 @@ spec:
       subPath: passwd
     - name: tmp
       mountPath: /tmp/
-    # make use of a statically built tmux that we bind mount in
+#    # make use of a statically built tmux that we bind mount in
     - name: slac-apps
       mountPath: /usr/local/bin/
       readOnly: true
-    - name: sdf
-      mountPath: /sdf
-    # slurm stuff
-    - mountPath: /var/run/munge/
-      name: munge-socket
-      readOnly: true
-    - mountPath: /usr/lib64/libmunge.so.2
-      name: munge-libs
-      readOnly: true
-    - mountPath: /opt/slurm/
-      name: slurm
-      readOnly: true
-    - mountPath: /run/slurm/conf/
-      name: slurm-config
-      readOnly: true
-   # modulefiles
-    - mountPath: /usr/share/Modules/init/.modulespath
-      name: userpod
-      readOnly: true
-      subPath: .modulespath
+#    - name: sdf
+#      mountPath: /sdf
+#    # slurm stuff
+#    - mountPath: /var/run/munge/
+#      name: munge-socket
+#      readOnly: true
+#    - mountPath: /usr/lib64/libmunge.so.2
+#      name: munge-libs
+#      readOnly: true
+#    - mountPath: /opt/slurm/
+#      name: slurm
+#      readOnly: true
+#    - mountPath: /run/slurm/conf/
+#      name: slurm-config
+#      readOnly: true
+#   # modulefiles
+#    - mountPath: /usr/share/Modules/init/.modulespath
+#      name: userpod
+#      readOnly: true
+#      subPath: .modulespath
 #    - mountPath: /usr/share/Modules/
 #      name: modulefile
 #      readOnly: true
@@ -128,28 +128,33 @@ spec:
   - name: tmp
     emptyDir:
       sizeLimit: "1Gi" # need real pv for this to work
-  - name: sdf
-    hostPath:
-      path: /sdf
+
+# Removing all hostPath mounts in favor of SCs
+# (hostPath mounts are now forbidden by policy)
+#  - name: sdf
+#    hostPath:
+#      path: /sdf
   - name: slac-apps
     persistentVolumeClaim:
       claimName: slac-apps
-  # slurm stuff
-  - name: munge-libs
-    hostPath:
-      path: /usr/lib64/libmunge.so.2.0.0
-  - name: munge-socket
-    hostPath:
-      path: /var/run/munge
-  - name: slurm
-    hostPath:
-      path: /opt/slurm
-  - name: slurm-config
-    hostPath:
-      path: /var/spool/slurmd/conf-cache
+#  # slurm stuff
+#  - name: munge-libs
+#    hostPath:
+#      path: /usr/lib64/libmunge.so.2.0.0
+#  - name: munge-socket
+#    hostPath:
+#      path: /var/run/munge
+#  - name: slurm
+#    hostPath:
+#      path: /opt/slurm
+#  - name: slurm-config
+#    hostPath:
+#      path: /var/spool/slurmd/conf-cache
   - name: userpod
     configMap:
       name: userpod
+
+
 #  - name: modulefile
 #    hostPath:
 #      path: /usr/share/Modules
