@@ -1,4 +1,42 @@
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kipac-data
+spec:
+  accessModes:
+  - ReadOnlyMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: sdf-data-kipac
+status:
+  accessModes:
+  - ReadOnlyMany
+  capacity:
+    storage: 1Gi
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kipac-group
+spec:
+  accessModes:
+  - ReadOnlyMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: sdf-group-kipac
+status:
+  accessModes:
+  - ReadOnlyMany
+  capacity:
+    storage: 1Gi
+
+---
+
+apiVersion: v1
 kind: Pod
 metadata:
   name: __USER__-__TEMPLATE__
@@ -19,8 +57,7 @@ spec:
 #        - matchExpressions:
 #          - key: slurm
 #            operator: In
-#            values:
-#            - "true"
+#            values: #            - "true"
   restartPolicy: OnFailure
   # use an init container to add relevant entries for passwd and group so that the user at least has their own info
   initContainers:
@@ -72,10 +109,21 @@ spec:
       subPath: passwd
     - name: tmp
       mountPath: /tmp/
+
     # make use of a statically built tmux that we bind mount in
     - name: slac-apps
       mountPath: /usr/local/bin/
       readOnly: true
+
+    # kipac only ##############
+    - name: kipac-data
+      mountPath: /sdf/data/kipac/
+      readOnly: true
+    - name: kipac-group
+      mountPath: /sdf/group/kipac/
+      readOnly: true
+    # #########################
+
   securityContext:
     fsGroup: __GID__
     supplementalGroups: [ __SUP_GID__ ]
@@ -85,6 +133,7 @@ spec:
     emptyDir: {}
 
   # this shoudl probably be a pvc or hostpath
+  # (should we mount user home directory?)
   - name: tmp
     emptyDir:
       sizeLimit: "1Gi" # need real pv for this to work
@@ -92,9 +141,19 @@ spec:
   - name: slac-apps
     persistentVolumeClaim:
       claimName: slac-apps
+
   - name: userpod
     configMap:
       name: userpod
+
+  # kipac only ##############
+  - name: kipac-data
+    persistentVolumeClaim:
+      claimName: kipac-data
+  - name: kipac-group
+    persistentVolumeClaim:
+      claimName: kipac-group
+  # #########################
 
 
   dnsConfig:
