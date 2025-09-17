@@ -6,6 +6,7 @@ resources:
 - cm-userpod.yaml
 - config.yaml
 - ../../base/
+- kipac-pvcs.yaml
 
 
   #- etc/nslcd.conf

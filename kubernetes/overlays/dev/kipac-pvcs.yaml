@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kipac-data
+spec:
+  accessModes:
+  - ReadOnlyMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: sdf-data-kipac
+status:
+  accessModes:
+  - ReadOnlyMany
+  capacity:
+    storage: 1Gi
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kipac-group
+spec:
+  accessModes:
+  - ReadOnlyMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: sdf-group-kipac
+status:
+  accessModes:
+  - ReadOnlyMany
+  capacity:
+    storage: 1Gi
+
+---
+
