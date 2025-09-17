@@ -14,6 +14,7 @@ configMapGenerator:
   - etc/templates/default.yaml
   - etc/templates/ldmx.yaml
   - etc/templates/supercdms.yaml
+  - etc/templates/kipac.yaml
   name: templates
 - files:
   - etc/sssd.conf
