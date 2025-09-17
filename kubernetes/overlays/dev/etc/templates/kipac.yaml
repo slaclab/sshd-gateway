@@ -80,10 +80,10 @@ spec:
     # kipac only ##############
     - name: kipac-data
       mountPath: /sdf/data/kipac/
-      readOnly: true
+      readOnly: false
     - name: kipac-group
       mountPath: /sdf/group/kipac/
-      readOnly: true
+      readOnly: false
     # #########################
 
   securityContext:
