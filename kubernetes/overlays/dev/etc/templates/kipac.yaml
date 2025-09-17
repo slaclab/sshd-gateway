@@ -77,6 +77,13 @@ spec:
       mountPath: /usr/local/bin/
       readOnly: true
 
+    ## user home
+    #  NOTE it's important to ONLY mount user's home dir subPath; NOT the whole sdf/home pvc
+    - name: sdf-home
+      mountPath: __HOME__
+      subPath: __HOME_SUBPATH__
+      readOnly: false
+    
     # kipac only ##############
     - name: kipac-data
       mountPath: /sdf/data/kipac/
@@ -95,10 +102,14 @@ spec:
     emptyDir: {}
 
   # this shoudl probably be a pvc or hostpath
-  # (should we mount user home directory?)
   - name: tmp
     emptyDir:
       sizeLimit: "1Gi" # need real pv for this to work
+  
+  # user home directory
+  - name: sdf-home
+    persistentVolumeClaim:
+      claimName: sdf-home
 
   - name: slac-apps
     persistentVolumeClaim:
