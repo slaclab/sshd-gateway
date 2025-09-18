@@ -40,9 +40,15 @@ create_pod() {
   fi
 
   echo "Starting container with image $image using template $template..."
-  sed -e "s|__UID__|$uid|g" -e "s|__FIRST_USER__|$first_user|g" -e "s|__USER__|$USER|g" -e "s|__HOME__|$home|g" \
-    -e "s|__GID__|$gid|g" -e "s|__SUP_GID__|$sup_gid|g" \
-    -e "s|__IMAGE__|$image|g" -e "s|__SESSION__|$session|g" \
+  sed \
+    -e "s|__UID__|$uid|g" \
+    -e "s|__FIRST_USER__|$first_user|g" \
+    -e "s|__USER__|$USER|g" \
+    -e "s|__HOME__|$home|g" \
+    -e "s|__GID__|$gid|g" \
+    -e "s|__SUP_GID__|$sup_gid|g" \
+    -e "s|__IMAGE__|$image|g" \
+    -e "s|__SESSION__|$session|g" \
     -e "s|__SHELL__|$shell|g" \
     -e "s|__SSSD__|$sssd_cm|g" \
     -e "s|__TEMPLATE__|$template|g" \
