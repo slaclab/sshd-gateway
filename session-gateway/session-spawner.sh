@@ -23,6 +23,7 @@ create_pod() {
   local sup_gid=$(id -G $USER | sed "s/ /, /g" )
   local shell=$(echo "$getent" |  cut -d : -f 7)
   local home=$(echo "$getent" | cut -d : -f 6)
+  local home_subpath=$(echo "$getent" | cut -d : -f 6 | cut -d / -f 3,4,5)
   local sssd_cm=$(kubectl get cm --sort-by=.metadata.creationTimestamp -o name | grep sssd | sed 's|configmap/||g' | head -n 1)
 
   # if template is not 'default' then check the allowlist.txt
@@ -45,6 +46,7 @@ create_pod() {
     -e "s|__FIRST_USER__|$first_user|g" \
     -e "s|__USER__|$USER|g" \
     -e "s|__HOME__|$home|g" \
+    -e "s|__HOME_SUBPATH__|$home_subpath|g" \
     -e "s|__GID__|$gid|g" \
     -e "s|__SUP_GID__|$sup_gid|g" \
     -e "s|__IMAGE__|$image|g" \
