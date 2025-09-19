@@ -4,14 +4,14 @@ metadata:
   name: sdf-home
 spec:
   accessModes:
-  - ReadOnlyMany
+  - ReadWriteMany
   resources:
     requests:
       storage: 1Gi
   storageClassName: sdf-home
 status:
   accessModes:
-  - ReadOnlyMany
+  - ReadWriteMany
   capacity:
     storage: 1Gi
 
