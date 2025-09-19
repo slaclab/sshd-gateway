@@ -64,6 +64,7 @@ spec:
         - SETGID
         - SETUID
         - SYS_CHROOT
+
     volumeMounts:
     - name: passwd-conf
       mountPath: /etc/passwd
@@ -71,12 +72,22 @@ spec:
       subPath: passwd
     - name: tmp
       mountPath: /tmp/
-#    # make use of a statically built tmux that we bind mount in
+
+    # make use of a statically built tmux that we bind mount in
     - name: slac-apps
       mountPath: /usr/local/bin/
       readOnly: true
+
+    ## user home
+    #  NOTE it's important to ONLY mount user's home dir subPath; NOT the whole sdf/home pvc
+    - name: sdf-home
+      mountPath: __HOME__
+      subPath: __HOME_SUBPATH__
+      readOnly: false
+
 #    - name: sdf
 #      mountPath: /sdf
+#
 #    # slurm stuff
 #    - mountPath: /var/run/munge/
 #      name: munge-socket
@@ -118,25 +129,43 @@ spec:
 #      name: module-libs
 #      readOnly: true
 #      subPath: libXau.so.6.0.0
+
   securityContext:
     fsGroup: __GID__
     supplementalGroups: [ __SUP_GID__ ]
+
+  dnsConfig:
+    searches:
+    - sdf.slac.stanford.edu
+    - slac.stanford.edu
+
   volumes:
   - name: passwd-conf
     emptyDir: {}
+
   # this shoudl probably be a pvc or hostpath
   - name: tmp
     emptyDir:
       sizeLimit: "1Gi" # need real pv for this to work
+
+  # user home directory
+  - name: sdf-home
+    persistentVolumeClaim:
+      claimName: sdf-home
+
+  - name: slac-apps
+    persistentVolumeClaim:
+      claimName: slac-apps
+
+  - name: userpod
+    configMap:
+      name: userpod
 
 # Removing all hostPath mounts in favor of SCs
 # (hostPath mounts are now forbidden by policy)
 #  - name: sdf
 #    hostPath:
 #      path: /sdf
-  - name: slac-apps
-    persistentVolumeClaim:
-      claimName: slac-apps
 #  # slurm stuff
 #  - name: munge-libs
 #    hostPath:
@@ -150,9 +179,6 @@ spec:
 #  - name: slurm-config
 #    hostPath:
 #      path: /var/spool/slurmd/conf-cache
-  - name: userpod
-    configMap:
-      name: userpod
 
 
 #  - name: modulefile
@@ -164,9 +190,5 @@ spec:
 #  - name: module-libs
 #    hostPath:
 #      path: /lib64/
-  dnsConfig:
-    searches:
-    - sdf.slac.stanford.edu
-    - slac.stanford.edu
 
 
