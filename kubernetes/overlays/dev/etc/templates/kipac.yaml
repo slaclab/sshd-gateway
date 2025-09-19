@@ -7,19 +7,6 @@ metadata:
     user: __USER__
     template: __TEMPLATE__
 spec:
-#  affinity:
-#    nodeAffinity:
-#      requiredDuringSchedulingIgnoredDuringExecution:
-#        nodeSelectorTerms:
-#        - matchExpressions:
-#          - key: storage/sdf
-#            operator: In
-#            values:
-#            - "true"
-#        - matchExpressions:
-#          - key: slurm
-#            operator: In
-#            values: #            - "true"
   restartPolicy: OnFailure
   # use an init container to add relevant entries for passwd and group so that the user at least has their own info
   initContainers:
@@ -97,6 +84,11 @@ spec:
     fsGroup: __GID__
     supplementalGroups: [ __SUP_GID__ ]
 
+  dnsConfig:
+    searches:
+    - sdf.slac.stanford.edu
+    - slac.stanford.edu
+
   volumes:
   - name: passwd-conf
     emptyDir: {}
@@ -127,11 +119,5 @@ spec:
     persistentVolumeClaim:
       claimName: kipac-group
   # #########################
-
-
-  dnsConfig:
-    searches:
-    - sdf.slac.stanford.edu
-    - slac.stanford.edu
 
 
