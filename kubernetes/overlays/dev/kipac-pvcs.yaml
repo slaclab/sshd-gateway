@@ -4,14 +4,14 @@ metadata:
   name: kipac-data
 spec:
   accessModes:
-  - ReadOnlyMany
+  - ReadWriteMany
   resources:
     requests:
       storage: 1Gi
   storageClassName: sdf-data-kipac
 status:
   accessModes:
-  - ReadOnlyMany
+  - ReadWriteMany
   capacity:
     storage: 1Gi
 
