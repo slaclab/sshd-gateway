@@ -47,8 +47,9 @@ spec:
         - MKNOD
         - NET_BIND_SERVICE
         - NET_RAW
-        - SETGID
-        - SETUID
+#       # KIPAC ONLY - we must enable setuid to permit (limited) sudoer privs on cp -p and/or rsync -a
+#        - SETGID
+#        - SETUID
         - SYS_CHROOT
 
     volumeMounts:
