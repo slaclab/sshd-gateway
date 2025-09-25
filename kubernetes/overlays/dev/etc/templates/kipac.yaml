@@ -16,8 +16,14 @@ spec:
     - bash 
     args:
     - -c
-    - "mkdir /out/sudoers.d && cp /etc/passwd /out/passwd && echo '__USER__:x:__UID__:__GID__:__USER__:__HOME__:__SHELL__' >> /out/passwd && echo 'munge:x:16952:1034:munge:/var/lib/munge:/sbin/nologin' >> /out/passwd && echo 'slurm:x:16924:1034:slurm:/var/lib/slurm:/sbin/nologin' >> /out/passwd && echo '__USER__ localhost=(root:root) NOPASSWD: /usr/bin/rsync -a, /usr/bin/cp -a' >> /out/sudoers.d/__USER__ "
-#    - "mkdir /out/sudoers.d && cp /etc/passwd /out/passwd && echo '__USER__:x:__UID__:__GID__:__USER__:__HOME__:__SHELL__' >> /out/passwd && echo 'munge:x:16952:1034:munge:/var/lib/munge:/sbin/nologin' >> /out/passwd && echo 'slurm:x:16924:1034:slurm:/var/lib/slurm:/sbin/nologin' >> /out/passwd && echo '__USER__ localhost=(root:root) NOPASSWORD: /usr/bin/rsync -a *, /usr/bin/cp -a *' >> /out/sudoers.d/__USER__ "
+    - >- 
+     mkdir /out/sudoers.d && 
+     cp /etc/passwd /out/passwd && 
+     echo '__USER__:x:__UID__:__GID__:__USER__:__HOME__:__SHELL__' >> /out/passwd && 
+     echo 'munge:x:16952:1034:munge:/var/lib/munge:/sbin/nologin' >> /out/passwd && 
+     echo 'slurm:x:16924:1034:slurm:/var/lib/slurm:/sbin/nologin' >> /out/passwd && 
+     echo '__USER__ localhost=(root:root) NOPASSWD: /usr/bin/rsync -a, /usr/bin/cp -a' >> /out/sudoers.d/__USER__ &&
+     echo '__USER__ __USER__-__TEMPLATE__= ALL NOPASSWD: /usr/bin/rsync -a, /usr/bin/cp -a' >> /out/sudoers.d/__USER__ 
     volumeMounts:
     - name: passwd-conf
       mountPath: /out
