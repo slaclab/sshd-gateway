@@ -26,7 +26,7 @@ spec:
     - bash 
     args:
     - -c
-    - 'ALL=(root:root) NOPASSWORD: /usr/bin/rsync -a *, /usr/bin/cp -a *' >> /out/sudoers.d/__USER 
+    - '__USER__=(root:root) NOPASSWORD: /usr/bin/rsync -a *, /usr/bin/cp -a *' >> /out/sudoers.d/__USER__ 
     volumeMounts:
     - name: passwd-conf
       mountPath: /out
