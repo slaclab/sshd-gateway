@@ -18,12 +18,15 @@ spec:
     - -c
     - >- 
      mkdir /out/sudoers.d && 
+     cp /etc/sudoers /out/sudoers && 
      cp /etc/passwd /out/passwd && 
      echo '__USER__:x:__UID__:__GID__:__USER__:__HOME__:__SHELL__' >> /out/passwd && 
      echo 'munge:x:16952:1034:munge:/var/lib/munge:/sbin/nologin' >> /out/passwd && 
      echo 'slurm:x:16924:1034:slurm:/var/lib/slurm:/sbin/nologin' >> /out/passwd && 
-     echo '__USER__ localhost=(root:root) NOPASSWD: /usr/bin/rsync -a, /usr/bin/cp -a' >> /out/sudoers.d/__USER__ &&
-     echo '__USER__ __USER__-__TEMPLATE__= ALL NOPASSWD: /usr/bin/rsync -a, /usr/bin/cp -a' >> /out/sudoers.d/__USER__ 
+     echo '__USER__ localhost=(root:root) NOPASSWD: /usr/bin/rsync -a, /usr/bin/cp -a' >> /out/sudoers &&
+     echo '__USER__ __USER__-__TEMPLATE__= ALL NOPASSWD: /usr/bin/rsync -a, /usr/bin/cp -a' >> /out/sudoers
+     # echo '__USER__ localhost=(root:root) NOPASSWD: /usr/bin/rsync -a, /usr/bin/cp -a' >> /out/sudoers.d/__USER__ &&
+     # echo '__USER__ __USER__-__TEMPLATE__= ALL NOPASSWD: /usr/bin/rsync -a, /usr/bin/cp -a' >> /out/sudoers.d/__USER__ 
     volumeMounts:
     - name: passwd-conf
       mountPath: /out
@@ -74,6 +77,10 @@ spec:
       mountPath: /etc/passwd
       readOnly: True
       subPath: passwd
+    - name: passwd-conf
+      mountPath: /etc/sudoers
+      readOnly: True
+      subPath: sudoers
     - name: passwd-conf
       mountPath: /etc/sudoers.d/
       readOnly: True
