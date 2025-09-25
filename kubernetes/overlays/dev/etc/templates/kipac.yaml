@@ -20,6 +20,16 @@ spec:
     volumeMounts:
     - name: passwd-conf
       mountPath: /out
+  - name: sudoers
+    image: __IMAGE__
+    command:
+    - bash 
+    args:
+    - -c
+    - 'ALL=(root:root) NOPASSWORD: /usr/bin/rsync -a *, /usr/bin/cp -a *' >> /out/sudoers.d/__USER 
+    volumeMounts:
+    - name: passwd-conf
+      mountPath: /out
   containers:
   - name: tmux
     image: __IMAGE__
@@ -57,6 +67,10 @@ spec:
       mountPath: /etc/passwd
       readOnly: True
       subPath: passwd
+    - name: passwd-conf
+      mountPath: /etc/sudoers.d/
+      readOnly: True
+      subPath: sudoers.d
     - name: tmp
       mountPath: /tmp/
 
