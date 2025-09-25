@@ -16,20 +16,21 @@ spec:
     - bash 
     args:
     - -c
-    - cp /etc/passwd /out/passwd && echo '__USER__:x:__UID__:__GID__:__USER__:__HOME__:__SHELL__' >> /out/passwd && echo 'munge:x:16952:1034:munge:/var/lib/munge:/sbin/nologin' >> /out/passwd && echo 'slurm:x:16924:1034:slurm:/var/lib/slurm:/sbin/nologin' >> /out/passwd
+    - "mkdir /out/sudoers.d && cp /etc/passwd /out/passwd && echo '__USER__:x:__UID__:__GID__:__USER__:__HOME__:__SHELL__' >> /out/passwd && echo 'munge:x:16952:1034:munge:/var/lib/munge:/sbin/nologin' >> /out/passwd && echo 'slurm:x:16924:1034:slurm:/var/lib/slurm:/sbin/nologin' >> /out/passwd && echo '__USER__=(root:root) NOPASSWORD: /usr/bin/rsync -a *, /usr/bin/cp -a *' >> /out/sudoers.d/__USER__ "
+#    - "cp /etc/passwd /out/passwd && echo '__USER__:x:__UID__:__GID__:__USER__:__HOME__:__SHELL__' >> /out/passwd && echo 'munge:x:16952:1034:munge:/var/lib/munge:/sbin/nologin' >> /out/passwd && echo 'slurm:x:16924:1034:slurm:/var/lib/slurm:/sbin/nologin' >> /out/passwd"
     volumeMounts:
     - name: passwd-conf
       mountPath: /out
-  - name: sudoers
-    image: __IMAGE__
-    command:
-    - bash 
-    args:
-    - -c
-    - "echo '__USER__=(root:root) NOPASSWORD: /usr/bin/rsync -a *, /usr/bin/cp -a *' >> /out/sudoers.d/__USER__ "
-    volumeMounts:
-    - name: passwd-conf
-      mountPath: /out
+#  - name: sudoers
+#    image: __IMAGE__
+#    command:
+#    - bash 
+#    args:
+#    - -c
+#    - "echo '__USER__=(root:root) NOPASSWORD: /usr/bin/rhsync -a *, /usr/bin/cp -a *' >> /out/sudoers.d/__USER__ "
+#    volumeMounts:
+#    - name: passwd-conf
+#      mountPath: /out
   containers:
   - name: tmux
     image: __IMAGE__
