@@ -21,6 +21,7 @@ spec:
       initContainers:
       - name: sssd
         image: busybox:latest
+        imagePullPolicy: IfNotPresent
         command: [ "/bin/sh", "-c" ]
         args:
         - cp -v /in/sssd.conf /out/sssd.conf && chmod 600 /out/sssd.conf && mkdir -p /out/conf.d && chown 755 /out/conf.d 
@@ -31,6 +32,7 @@ spec:
           mountPath: /out
       - name: hostkeys
         image: busybox:latest
+        imagePullPolicy: IfNotPresent
         command: [ "/bin/sh", "-c" ]
         args:
         - cp -v /in/* /out/ && chmod go-rwx /out/*
@@ -43,7 +45,7 @@ spec:
       - name: gateway
         image: slaclab/session-gateway
         command: ["/entrypoint.sh"]
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 22
         #securityContext:
