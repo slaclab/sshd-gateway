@@ -8,4 +8,11 @@ data:
   # exceptions are that default will always be allowed
   allowlist.txt: |
     ytl ldmx
+    ytl supercdms
+    omoreno ldmx
+    omoreno supercdms
+    mokun ldmx
+    mokun supercdms
+    mokun kipac
+
 

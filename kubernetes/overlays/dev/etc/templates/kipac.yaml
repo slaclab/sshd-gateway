@@ -1,0 +1,160 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: __USER__-__TEMPLATE__
+  labels:
+    app: session-host
+    user: __USER__
+    template: __TEMPLATE__
+spec:
+  restartPolicy: OnFailure
+  # use an init container to add relevant entries for passwd and group so that the user at least has their own info
+  initContainers:
+  - name: passwd
+    image: __IMAGE__
+    command:
+    - bash 
+    args:
+    - -c
+    - >- 
+     mkdir /out/sudoers.d && 
+     cp /etc/sudoers /out/sudoers && 
+     cp /etc/passwd /out/passwd && 
+     echo '__USER__:x:__UID__:__GID__:__USER__:__HOME__:__SHELL__' >> /out/passwd && 
+     echo 'munge:x:16952:1034:munge:/var/lib/munge:/sbin/nologin' >> /out/passwd && 
+     echo 'slurm:x:16924:1034:slurm:/var/lib/slurm:/sbin/nologin' >> /out/passwd && 
+     echo '__USER__ __USER__-__TEMPLATE__ = (ALL) NOPASSWD: /usr/bin/rsync --archive *, /usr/bin/cp --archive --no-clobber *' >> /out/sudoers.d/__USER__ 
+#     echo '__USER__ __USER__-__TEMPLATE__ = (ALL) NOPASSWD: /usr/bin/rsync --archive /sdf/*/kipac*, /usr/bin/cp --archive --no-clobber /sdf/*/kipac*' >> /out/sudoers.d/__USER__ 
+#     mkdir /out/sudoers.d && 
+#     cp /etc/sudoers /out/sudoers && 
+#     cp /etc/passwd /out/passwd && 
+#     echo '__USER__:x:__UID__:__GID__:__USER__:__HOME__:__SHELL__' >> /out/passwd && 
+#     echo 'munge:x:16952:1034:munge:/var/lib/munge:/sbin/nologin' >> /out/passwd && 
+#     echo 'slurm:x:16924:1034:slurm:/var/lib/slurm:/sbin/nologin' >> /out/passwd && 
+#     echo '__USER__ localhost = (root:root) NOPASSWD: /usr/bin/rsync -a, /usr/bin/cp -a' >> /out/sudoers &&
+#     echo '__USER__ __USER__-__TEMPLATE__ = (ALL) NOPASSWD: /usr/bin/rsync -a, /usr/bin/cp -a' >> /out/sudoers &&
+#     echo '__USER__ localhost = (root:root) NOPASSWD: /usr/bin/rsync -a, /usr/bin/cp -a' >> /out/sudoers.d/__USER__ &&
+#     echo '__USER__ __USER__-__TEMPLATE__ = (ALL) NOPASSWD: /usr/bin/rsync -a, /usr/bin/cp -a' >> /out/sudoers.d/__USER__ 
+    volumeMounts:
+    - name: passwd-conf
+      mountPath: /out
+#  - name: sudoers
+#    image: __IMAGE__
+#    command:
+#    - bash 
+#    args:
+#    - -c
+#    - "echo '__USER__=(root:root) NOPASSWORD: /usr/bin/rhsync -a *, /usr/bin/cp -a *' >> /out/sudoers.d/__USER__ "
+#    volumeMounts:
+#    - name: passwd-conf
+#      mountPath: /out
+  containers:
+  - name: tmux
+    image: __IMAGE__
+    imagePullPolicy: Always
+    command:
+    - /bin/bash
+    args:
+    - -c
+    - sleep infinity
+    stdin: True
+    tty: True
+    resources:
+      limits:
+        cpu: "0.5"
+        memory: "1000Mi"
+      requests:
+        cpu: "0.1"
+        memory: "200Mi"
+    securityContext:
+      runAsUser: __UID__
+      capabilities:
+        drop:
+        - AUDIT_WRITE
+        - DAC_OVERRIDE
+        - MKNOD
+        - NET_BIND_SERVICE
+        - NET_RAW
+#       # KIPAC ONLY - we must enable setuid to permit (limited) sudoer privs on cp -p and/or rsync -a
+#        - SETGID
+#        - SETUID
+        - SYS_CHROOT
+
+    volumeMounts:
+    - name: passwd-conf
+      mountPath: /etc/passwd
+      readOnly: True
+      subPath: passwd
+    - name: passwd-conf
+      mountPath: /etc/sudoers
+      readOnly: True
+      subPath: sudoers
+    - name: passwd-conf
+      mountPath: /etc/sudoers.d/
+      readOnly: True
+      subPath: sudoers.d
+    - name: tmp
+      mountPath: /tmp/
+
+    # make use of a statically built tmux that we bind mount in
+    - name: slac-apps
+      mountPath: /usr/local/bin/
+      readOnly: true
+
+    ## user home
+    #  NOTE it's important to ONLY mount user's home dir subPath; NOT the whole sdf/home pvc
+    - name: sdf-home
+      mountPath: __HOME__
+      subPath: __HOME_SUBPATH__
+      readOnly: false
+    
+    # kipac only ##############
+    - name: kipac-data
+      mountPath: /sdf/data/kipac/
+      readOnly: false
+    - name: kipac-group
+      mountPath: /sdf/group/kipac/
+      readOnly: false
+    # #########################
+
+  securityContext:
+    fsGroup: __GID__
+    supplementalGroups: [ __SUP_GID__ ]
+
+  dnsConfig:
+    searches:
+    - sdf.slac.stanford.edu
+    - slac.stanford.edu
+
+  volumes:
+  - name: passwd-conf
+    emptyDir: {}
+
+  # this shoudl probably be a pvc or hostpath
+  - name: tmp
+    emptyDir:
+      sizeLimit: "1Gi" # need real pv for this to work
+  
+  # user home directory
+  - name: sdf-home
+    persistentVolumeClaim:
+      claimName: sdf-home
+
+  - name: slac-apps
+    persistentVolumeClaim:
+      claimName: slac-apps
+
+  - name: userpod
+    configMap:
+      name: userpod
+
+  # kipac only ##############
+  - name: kipac-data
+    persistentVolumeClaim:
+      claimName: kipac-data
+  - name: kipac-group
+    persistentVolumeClaim:
+      claimName: kipac-group
+  # #########################
+
+

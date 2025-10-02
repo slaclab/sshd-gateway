@@ -4,7 +4,7 @@
 
 export rm=${rm:-false}
 export template=${template:-"default"}
-export image=${image:-"slaclab/login-rocky8:latest"}
+export image=${image:-${DEFAULT_IMAGE:-"slaclab/login-rocky9:latest"}}
 export session=${session:-""}
 export control_mode=${control_mode:-""}
 
@@ -23,6 +23,7 @@ create_pod() {
   local sup_gid=$(id -G $USER | sed "s/ /, /g" )
   local shell=$(echo "$getent" |  cut -d : -f 7)
   local home=$(echo "$getent" | cut -d : -f 6)
+  local home_subpath=$(echo "$getent" | cut -d : -f 6 | cut -d / -f 4,5)
   local sssd_cm=$(kubectl get cm --sort-by=.metadata.creationTimestamp -o name | grep sssd | sed 's|configmap/||g' | head -n 1)
 
   # if template is not 'default' then check the allowlist.txt
@@ -40,9 +41,16 @@ create_pod() {
   fi
 
   echo "Starting container with image $image using template $template..."
-  sed -e "s|__UID__|$uid|g" -e "s|__FIRST_USER__|$first_user|g" -e "s|__USER__|$USER|g" -e "s|__HOME__|$home|g" \
-    -e "s|__GID__|$gid|g" -e "s|__SUP_GID__|$sup_gid|g" \
-    -e "s|__IMAGE__|$image|g" -e "s|__SESSION__|$session|g" \
+  sed \
+    -e "s|__UID__|$uid|g" \
+    -e "s|__FIRST_USER__|$first_user|g" \
+    -e "s|__USER__|$USER|g" \
+    -e "s|__HOME__|$home|g" \
+    -e "s|__HOME_SUBPATH__|$home_subpath|g" \
+    -e "s|__GID__|$gid|g" \
+    -e "s|__SUP_GID__|$sup_gid|g" \
+    -e "s|__IMAGE__|$image|g" \
+    -e "s|__SESSION__|$session|g" \
     -e "s|__SHELL__|$shell|g" \
     -e "s|__SSSD__|$sssd_cm|g" \
     -e "s|__TEMPLATE__|$template|g" \

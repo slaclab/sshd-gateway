@@ -1,7 +1,7 @@
 RUNTIME ?= sudo podman
 TAG ?= latest
 REPO ?= slaclab
-IMAGE ?= session-gateway
+IMAGE ?= login-rocky9
 
 .PHONEY:
 
