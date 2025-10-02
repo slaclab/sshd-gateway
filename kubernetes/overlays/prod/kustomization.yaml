@@ -6,6 +6,8 @@ resources:
 - cm-userpod.yaml
 - config.yaml
 - ../../base/
+- kipac-pvcs.yaml
+- sdf-home-pvc.yaml
 
 
 configMapGenerator:
@@ -13,12 +15,14 @@ configMapGenerator:
   - etc/templates/default.yaml
   - etc/templates/ldmx.yaml
   - etc/templates/supercdms.yaml
+  - etc/templates/kipac.yaml
   name: templates
   options:
     disableNameSuffixHash: true
 - files:
   - etc/sssd.conf
   - etc/krb5.conf
+  #- etc/nslcd.conf
   name: sssd
 - files:
   - etc/sshd_config
@@ -35,8 +39,9 @@ secretGenerator:
   name: ssh-hostkeys
 
 images:
-- name: slaclab/session-gateway
-  newTag: 20230912-0830
+- name: slaclab/session-gateway 
+  newTag: 20250918-1515
+
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 patches:

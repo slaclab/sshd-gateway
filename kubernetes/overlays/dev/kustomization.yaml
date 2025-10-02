@@ -10,7 +10,6 @@ resources:
 - sdf-home-pvc.yaml
 
 
-  #- etc/nslcd.conf
 configMapGenerator:
 - files:
   - etc/templates/default.yaml
@@ -23,6 +22,7 @@ configMapGenerator:
 - files:
   - etc/sssd.conf
   - etc/krb5.conf
+  #- etc/nslcd.conf
   name: sssd
 - files:
   - etc/sshd_config
