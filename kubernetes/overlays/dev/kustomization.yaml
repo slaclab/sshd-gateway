@@ -18,6 +18,8 @@ configMapGenerator:
   - etc/templates/supercdms.yaml
   - etc/templates/kipac.yaml
   name: templates
+  options:
+    disableNameSuffixHash: true
 - files:
   - etc/sssd.conf
   - etc/krb5.conf
